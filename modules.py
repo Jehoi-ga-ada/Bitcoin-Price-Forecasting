@@ -26,6 +26,7 @@ def save_dict_to_json(data, filename='data.json'):
         json.dump(native_data, json_file, indent=4)
         
 def train_model(model, model_name, loss_fn, optimizer, metrics, X_train, y_train, batch_size=32, epochs=10, shuffle=True, verbose=2, callbacks=None ,validation_data=None):
+    tf.random.set_seed(42)
     model.compile(
         loss=loss_fn,
         optimizer=optimizer,
