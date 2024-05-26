@@ -73,7 +73,7 @@ def plot_train_val_loss(history, model_name):
     plt.show()
     
 def plot_time_series(values, format='.', start=0, end=None, label=None):
-    plt.plot(values[start:end], format, label=label)
+    plt.plot(np.squeeze(values)[start:end], format, label=label)
     plt.xlabel('Time')
     plt.ylabel('BTC Price')
     if label:
