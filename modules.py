@@ -48,21 +48,22 @@ def train_model(model, model_name, loss_fn, optimizer, metrics, X_train, y_train
     return history
 
 def plot_loss_and_prediction(model, X_train, y_train, history=None, validation_data=None, model_name=''):
-    plt.figure(figsize=(15, 3))
-    y_train_pred = model.predict(X_train, verbose=0)
-    if history!=None and validation_data!=None:
-        plt.subplot(1, 3, 1)
-    plt.title(f'{model_name} Predictions')
-    plot_time_series(y_train_pred, format='-', label='Prediction')
-    plot_time_series(y_train, format='-', label='Actual Price')
-    if validation_data!=None:
-        y_val_pred = model.predict(validation_data[0], verbose=0)
-        plt.subplot(1, 3, 2)
-        plot_time_series(y_val_pred, format='-', label='Prediction')
-        plot_time_series(validation_data[1], format='-', label='Actual Price')
-    if history!=None:
-        plt.subplot(1, 3, 3)
-        plot_train_val_loss(history, model_name)
+    y_train_pred = tf.squeeze(model.predict(X_train, verbose=0))
+    for i in range(y_train.shape[1]):          
+        plt.figure(figsize=(15, 3))
+        if history!=None and validation_data!=None:
+            plt.subplot(1, 3, 1)
+        plt.title(f'{model_name} Predictions H+{i}')
+        plot_time_series(y_train_pred[:, i], format='-', label='Prediction')
+        plot_time_series(y_train[:, i], format='-', label='Actual Price')
+        if validation_data!=None:
+            y_val_pred = tf.squeeze(model.predict(validation_data[0], verbose=0))
+            plt.subplot(1, 3, 2)
+            plot_time_series(y_val_pred[:, i], format='-', label='Prediction')
+            plot_time_series(validation_data[1][:, i], format='-', label='Actual Price')
+        if history!=None:
+            plt.subplot(1, 3, 3)
+            plot_train_val_loss(history, model_name)
 
 def plot_train_val_loss(history, model_name):
     plt.plot(history.history['loss'], label='Training Loss')
@@ -92,8 +93,8 @@ def mean_absolute_symmetric_error(y_true, y_pred):
     return mae / mae_naive_no_season
 
 def evaluate_preds(y_true, y_pred):
-    y_true = tf.cast(y_true, dtype=tf.float32)
-    y_pred = tf.cast(y_pred, dtype=tf.float32)
+    y_true = tf.squeeze(tf.cast(y_true, dtype=tf.float32))
+    y_pred = tf.squeeze(tf.cast(y_pred, dtype=tf.float32))
     
     mae = k.metrics.mean_absolute_error(y_true, y_pred)
     mse = k.metrics.mean_squared_error(y_true, y_pred)
